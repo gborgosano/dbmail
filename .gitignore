@@ -15,3 +15,5 @@ jenkins/local/
 jenkins/parts/
 jenkins/sbin/
 jenkins/var/
+.DS_Store
+config.log
