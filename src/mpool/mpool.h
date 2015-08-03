@@ -25,6 +25,7 @@
 #define __MPOOL_H__
 
 #include <sys/types.h>
+#include "ram_observer/ram_observer.h"
 
 /*
  * mpool flags to mpool_alloc or mpool_set_attr

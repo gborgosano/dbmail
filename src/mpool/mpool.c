@@ -810,7 +810,9 @@ static	int	free_mem(mpool_t *mp_p, void *addr, const unsigned long size)
 {
   unsigned long	old_size, fence;
   int		ret;
+  
   mpool_block_t	*block_p;
+
   
   /*
    * If the size is larger than a block then the allocation must be at
@@ -855,6 +857,8 @@ static	int	free_mem(mpool_t *mp_p, void *addr, const unsigned long size)
   /* adjust our stats */
   mp_p->mp_alloc_c--;
   
+  writeByteSizeRamObserver(size, "free_mem");
+
   return MPOOL_ERROR_NONE;
 }
 
@@ -1215,6 +1219,7 @@ void	*mpool_alloc(mpool_t *mp_p, const unsigned long byte_size,
 		     int *error_p)
 {
   void	*addr;
+ 
   
   if (mp_p == NULL) {
     /* special case -- do a normal malloc */
@@ -1248,6 +1253,8 @@ void	*mpool_alloc(mpool_t *mp_p, const unsigned long byte_size,
   if (mp_p->mp_log_func != NULL) {
     mp_p->mp_log_func(mp_p, MPOOL_FUNC_ALLOC, byte_size, 0, addr, NULL, 0);
   }
+  
+  writeByteSizeRamObserver(byte_size, "mpool_alloc");
   
   return addr;
 }
@@ -1320,6 +1327,9 @@ void	*mpool_calloc(mpool_t *mp_p, const unsigned long ele_n,
   if (mp_p->mp_log_func != NULL) {
     mp_p->mp_log_func(mp_p, MPOOL_FUNC_CALLOC, ele_size, ele_n, addr, NULL, 0);
   }
+  
+    writeByteSizeRamObserver(byte_size, "mpool_calloc");
+
   
   /* NOTE: error_p set above */
   return addr;
