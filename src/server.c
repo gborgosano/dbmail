@@ -961,7 +961,6 @@ int server_getopt(ServerConfig_T *config, const char *service, int argc, char *a
 
 int server_mainloop(ServerConfig_T *config, const char *servicename)
 {
-	openFileRamObserver();
 	strncpy(config->process_name, servicename, FIELDSIZE-1);
 
 	g_mime_init(GMIME_ENABLE_RFC2047_WORKAROUNDS);

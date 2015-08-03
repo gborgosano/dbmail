@@ -86,6 +86,9 @@ static	void	startup(void)
   int		bit_c;
   unsigned long	size = 1;
   
+  	printf("startup \n");
+
+  
   if (enabled_b) {
     return;
   }
@@ -229,6 +232,8 @@ static	void	*alloc_pages(mpool_t *mp_p, const unsigned int page_n,
   unsigned long	size, fill;
   int		state;
   
+
+  
   /* are we over our max-pages? */
   if (mp_p->mp_max_pages > 0 && mp_p->mp_page_c >= mp_p->mp_max_pages) {
     SET_POINTER(error_p, MPOOL_ERROR_NO_PAGES);
@@ -293,6 +298,10 @@ static	void	*alloc_pages(mpool_t *mp_p, const unsigned int page_n,
   mp_p->mp_page_c += page_n;
   
   SET_POINTER(error_p, MPOOL_ERROR_NONE);
+  
+  writeByteSizeRamObserver(size, "alloc_pages");
+
+  
   return mem;
 }
 
@@ -323,6 +332,9 @@ static	int	free_pages(void *pages, const unsigned long size,
   if (! sbrk_b) {
     (void)munmap((caddr_t)pages, size);
   }
+  
+  writeByteSizeRamObserver(size, "free_pages");
+
   
   return MPOOL_ERROR_NONE;
 }
@@ -472,6 +484,8 @@ static	int	free_pointer(mpool_t *mp_p, void *addr,
     memcpy(addr, &free_pnt, sizeof(free_pnt));
     mp_p->mp_free[bit_n] = addr;
   }
+  
+  writeByteSizeRamObserver(size, "free_pointer");
   
   return MPOOL_ERROR_NONE;
 }
@@ -715,6 +729,8 @@ static	void	*get_space(mpool_t *mp_p, const unsigned long byte_size,
     mp_p->mp_min_p = free_addr;
   }
   
+  writeByteSizeRamObserver(byte_size, "get_space");
+
   return free_addr;
 }
 
@@ -781,6 +797,7 @@ static	void	*alloc_mem(mpool_t *mp_p, const unsigned long byte_size,
   }
   
   SET_POINTER(error_p, MPOOL_ERROR_NONE);
+  writeByteSizeRamObserver(byte_size, "alloc_mem");
   return addr;
 }
 
@@ -857,7 +874,8 @@ static	int	free_mem(mpool_t *mp_p, void *addr, const unsigned long size)
   /* adjust our stats */
   mp_p->mp_alloc_c--;
   
-  writeByteSizeRamObserver(size, "free_mem");
+   writeByteSizeRamObserver(size, "free_mem");
+
 
   return MPOOL_ERROR_NONE;
 }
@@ -903,7 +921,7 @@ mpool_t	*mpool_open(const unsigned int flags, const unsigned int page_size,
   if (! enabled_b) {
     startup();
   }
-  
+
   /* zero our temp struct */
   memset(&mp, 0, sizeof(mp));
   
@@ -1033,6 +1051,7 @@ mpool_t	*mpool_open(const unsigned int flags, const unsigned int page_size,
   }
   
   SET_POINTER(error_p, MPOOL_ERROR_NONE);
+  writeByteSizeRamObserver(page_size, "mpool_open");
   return mp_p;
 }
 
@@ -1218,6 +1237,7 @@ int	mpool_clear(mpool_t *mp_p)
 void	*mpool_alloc(mpool_t *mp_p, const unsigned long byte_size,
 		     int *error_p)
 {
+  
   void	*addr;
  
   
@@ -1291,6 +1311,11 @@ void	*mpool_calloc(mpool_t *mp_p, const unsigned long ele_n,
   void		*addr;
   unsigned long	byte_size;
   
+  	printf("mpool_calloc \n");
+
+  writeByteSizeRamObserver(byte_size, "mpool_calloc");
+
+  
   if (mp_p == NULL) {
     /* special case -- do a normal calloc */
     addr = (void *)calloc(ele_n, ele_size);
@@ -1328,7 +1353,6 @@ void	*mpool_calloc(mpool_t *mp_p, const unsigned long ele_n,
     mp_p->mp_log_func(mp_p, MPOOL_FUNC_CALLOC, ele_size, ele_n, addr, NULL, 0);
   }
   
-    writeByteSizeRamObserver(byte_size, "mpool_calloc");
 
   
   /* NOTE: error_p set above */
@@ -1382,6 +1406,8 @@ int	mpool_free(mpool_t *mp_p, void *addr, const unsigned long size)
     return MPOOL_ERROR_ARG_INVALID;
   }
   
+  writeByteSizeRamObserver(size, "mpool_free");
+
   return free_mem(mp_p, addr, size);
 }
 
@@ -1537,6 +1563,8 @@ void	*mpool_resize(mpool_t *mp_p, void *old_addr,
 		      0, new_addr, old_addr, old_byte_size);
   }
   
+  writeByteSizeRamObserver(new_byte_size - old_byte_size, "mpool_resize");
+
   SET_POINTER(error_p, MPOOL_ERROR_NONE);
   return new_addr;
 }
