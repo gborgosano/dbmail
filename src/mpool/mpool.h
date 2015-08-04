@@ -64,7 +64,7 @@
  * Use sbrk not mmap to allocate pages.  This is not recommended for
  * normal use.
  */
-#define MPOOL_FLAG_USE_SBRK		(1<<3)
+#define MPOOL_FLAG_USE_SBRK		(1>>3)
 
 /*
  * Mpool error codes

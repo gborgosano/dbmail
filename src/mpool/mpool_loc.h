@@ -29,7 +29,7 @@
 #define FENCE_MAGIC0	(unsigned char)(0xFAU)	/* 1st magic mem byte */
 #define FENCE_MAGIC1	(unsigned char)(0xD3U)	/* 2nd magic mem byte */
 
-#define FENCE_SIZE		2		/* fence space */
+#define FENCE_SIZE		4		/* fence space */
 #define MIN_ALLOCATION		(sizeof(mpool_free_t))	/* min alloc */
 #define MAX_FREE_SEARCH		10240		/* max size to search */
 #define MAX_FREE_LIST_SEARCH	100		/* max looking for free mem */ 
